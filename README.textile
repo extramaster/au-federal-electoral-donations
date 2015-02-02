@@ -3,4 +3,6 @@ A scraper on morph.io forked from a legacy project from https://classic.scraperw
 
 Australian Federal Electoral Donations, 1998 to 2014 from the "Annual Financial Disclosure Returns for Public Inspection" database produced by the Australian Electoral Commission (AEC): http://periodicdisclosures.aec.gov.au/
 
+With this dataset, you can access the 2013/2014 political donations list to Australian political parties during this period. The resulting database can be downloaded here: https://morph.io/extramaster/au-federal-electoral-donations
+
 Licence: Except where otherwise excluded and reserved, the material on this website is licensed under a Creative Commons Attribution 3.0 License
