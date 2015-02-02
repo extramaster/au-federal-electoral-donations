@@ -37,28 +37,25 @@ def patch_http_response_read(func):
     return inner
 httplib.HTTPResponse.read = patch_http_response_read(httplib.HTTPResponse.read)
 
-
-for period, periodid in annReportingPeriods.items():
+uniqueRowIndex = 0
+for reportingPeriod, periodid in annReportingPeriods.items():
     br = mechanize.Browser()
     response = br.open(annDonorsurl)
-    print "Loading data for "+period
-    #print "All forms:", [ form.name  for form in br.forms() ]
+    print "Loading data for "+reportingPeriod
 
     br.select_form(predicate=lambda f: f.attrs.get('id', None) == 'formMaster')
-    #print br.form
 
     br['ctl00$dropDownListPeriod']=[periodid]
     response = br.submit("ctl00$buttonGo")
     response = br.open(annDonorsurl)
 
     br.select_form(predicate=lambda f: f.attrs.get('id', None) == 'formMaster')
-    #br['ctl00$ContentPlaceHolderBody$dropDownListParties']=["0"]
     response = br.submit("ctl00$ContentPlaceHolderBody$analysisControl$buttonExport")
 
     br.select_form(predicate=lambda f: f.attrs.get('id', None) == 'formMaster')
     br['ctl00$ContentPlaceHolderBody$exportControl$dropDownListOptions']=['csv']
     response = br.submit("ctl00$ContentPlaceHolderBody$exportControl$buttonExport")
-    
+
     lines = response.read().split("\n")
     clist = list(csv.reader(lines))
     
@@ -68,16 +65,18 @@ for period, periodid in annReportingPeriods.items():
     if "" in headers:
         headers.remove("")
     headers.append("ReportingPeriod")
-    print "Period "+period+" %d columns and %d rows" %  (len(headers), len(clist))
+    headers.append("Unique")
+    print "Period "+reportingPeriod+" %d columns and %d rows" %  (len(headers), len(clist))
     rows = []
     for row in clist:
         if len(row) == 9: 
-            row[8] = period # "ReportingPeriod"
-            #print dict(zip(headers, row))
+            row[8] = reportingPeriod
+            
+            row.append(uniqueRowIndex)
             rows.append(dict(zip(headers, row)))
+            uniqueRowIndex = uniqueRowIndex+1
         else:
-            print "Invalid row in "+period
-            print dict(zip(headers, row))
+            print "Invalid row in "+reportingPeriod+". Ignored and continuing."
 
-    unique_keys =  ['DonorClientNm', 'RecipientClientNm', 'DonationDt'] # Change this to the fields that uniquely identify a row
+    unique_keys =  ['Unique']
     scraperwiki.sqlite.save(unique_keys, rows)
