@@ -1,3 +1,6 @@
-Australian Federal Electoral Donations, 2001 to 2012 from the "Annual Financial Disclosure Returns for Public Inspection" database produced by the Australian Electoral Commission (AEC): http://periodicdisclosures.aec.gov.au/
+
+A scraper on morph.io forked from a legacy project from https://classic.scraperwiki.com/scrapers/au-federal-electoral-donations/index.html
+
+Australian Federal Electoral Donations, 1998 to 2014 from the "Annual Financial Disclosure Returns for Public Inspection" database produced by the Australian Electoral Commission (AEC): http://periodicdisclosures.aec.gov.au/
 
 Licence: Except where otherwise excluded and reserved, the material on this website is licensed under a Creative Commons Attribution 3.0 License
