@@ -1,4 +1,5 @@
 
+import httplib
 import csv
 import mechanize 
 import lxml.html
@@ -24,24 +25,37 @@ annReportingPeriods={
 "2012-13":"51",
 "2013-14":"55",
 }
+
+
+def patch_http_response_read(func):
+    def inner(*args):
+        try:
+            return func(*args)
+        except httplib.IncompleteRead, e:
+            return e.partial
+
+    return inner
+httplib.HTTPResponse.read = patch_http_response_read(httplib.HTTPResponse.read)
+
+
 for period, periodid in annReportingPeriods.items():
     br = mechanize.Browser()
     response = br.open(annDonorsurl)
     print "Loading data for "+period
     #print "All forms:", [ form.name  for form in br.forms() ]
 
-    br.select_form(name="aspnetForm")
+    br.select_form(predicate=lambda f: f.attrs.get('id', None) == 'formMaster')
     #print br.form
 
     br['ctl00$dropDownListPeriod']=[periodid]
     response = br.submit("ctl00$buttonGo")
     response = br.open(annDonorsurl)
 
-    br.select_form(name="aspnetForm")
+    br.select_form(predicate=lambda f: f.attrs.get('id', None) == 'formMaster')
     #br['ctl00$ContentPlaceHolderBody$dropDownListParties']=["0"]
     response = br.submit("ctl00$ContentPlaceHolderBody$analysisControl$buttonExport")
 
-    br.select_form(name="aspnetForm")
+    br.select_form(predicate=lambda f: f.attrs.get('id', None) == 'formMaster')
     br['ctl00$ContentPlaceHolderBody$exportControl$dropDownListOptions']=['csv']
     response = br.submit("ctl00$ContentPlaceHolderBody$exportControl$buttonExport")
     
